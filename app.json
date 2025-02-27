@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "aiema",
+    "name": "Aiema",
     "slug": "aiema",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.aiema.client"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +33,18 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1adea63e-4baf-4085-bfe0-787e699cf6bd"
+      }
+    },
+    "owner": "oluwaborihamzat"
   }
 }
