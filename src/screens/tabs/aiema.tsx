@@ -52,7 +52,7 @@ const LandingScreen = ({ onInputStart }: { onInputStart: () => void }) => {
         <View style={styles.inputContainer}>
           <TouchableOpacity style={styles.inputButton} onPress={onInputStart}>
             <Ionicons name="add" size={20} color="#666" />
-            <Text style={styles.inputButtonText}>Need help? Type or say it...</Text>
+            <Text style={styles.inputButtonText}>Need help? Type or say it here...</Text>
             <View style={styles.voiceButton}>
               <Ionicons name="mic" size={20} color="white" />
             </View>
