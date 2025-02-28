@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, TextInput, TouchableOpacity, ScrollView } from "react-native";
 // @ts-ignore
-import Voice from "react-native-voice/voice
+import Voice from "react-native-voice/voice;
 import { StyleSheet } from "react-native-unistyles";
 // @ts-ignore
 import { SystemBars } from "react-native-bars";
