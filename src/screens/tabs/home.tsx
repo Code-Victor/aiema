@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { YStack, XStack } from "@/components/ui/stacks";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 export default function Home() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -151,7 +152,8 @@ function InsuranceCard() {
           }}
         />
       </YStack>
-      <XStack
+      <Badge title="Active" />
+      {/* <XStack
         ai="center"
         jc="center"
         bg="success.400"
@@ -161,7 +163,7 @@ function InsuranceCard() {
         <Text fow="medium" color="shades.white">
           Active
         </Text>
-      </XStack>
+      </XStack> */}
     </XStack>
   );
 }
