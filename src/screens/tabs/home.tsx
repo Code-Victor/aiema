@@ -147,8 +147,8 @@ function InsuranceCard() {
         <Image
           source={require("@/assets/images/eden-care.png")}
           style={{
-            aspectRatio: 4.333,
-            height: 18,
+            aspectRatio: 3.556,
+            height: 27,
           }}
         />
       </YStack>

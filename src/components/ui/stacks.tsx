@@ -3,7 +3,7 @@ import { StyleSheet, UnistylesVariants } from "react-native-unistyles";
 import { View as RNView } from "react-native";
 type ComponentProps = UnistylesVariants<typeof styles>;
 
-interface StackProps
+export interface StackProps
   extends ComponentProps,
     React.ComponentProps<typeof RNView> {}
 
