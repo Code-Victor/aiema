@@ -35,6 +35,7 @@ const lightTheme = {
         "neutral.500":"#0C0F0D",
         "shades.white":"#FFFFFF",
         "shades.black":"#000000",
+        "background":"#F5F5F5"
 
     },
     // typography
@@ -62,8 +63,8 @@ const lightTheme = {
     // font weights
     fontWeights: {
         regular: "Urbanist_400Regular",
-        semibold: "Urbanist_500Medium",
-        medium: "Urbanist_600SemiBold",
+        medium: "Urbanist_500Medium",
+        semibold: "Urbanist_600SemiBold",
         bold: "Urbanist_700Bold",
     },
 

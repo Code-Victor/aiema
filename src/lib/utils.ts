@@ -1,5 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform, Share } from "react-native";
+import * as Clipboard from "expo-clipboard";
+import {toast} from "sonner-native"
 
 const isAndroid = Platform.OS === "android";
 const isIOS = Platform.OS === "ios";
@@ -11,7 +13,7 @@ export function capitalize(str: string) {
 }
 
 export function getAvatar(name: string) {
-  const avatarUrl = `https://api.dicebear.com/7.x/adventurer/png?backgroundColor=B9C8FF&seed=${name}`;
+  const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}`;
 
   return avatarUrl;
 }
@@ -68,8 +70,24 @@ export async function clearAuthToken() {
  */
 export async function copyToClipboard(text: string) {
   await Clipboard.setStringAsync(text);
-  Burnt.toast({
-    title: "Copied to clipboard",
-    preset: "done",
-  });
+  toast.success("Copied to clipboard");
+}
+
+/**
+ * This function determines the time of day (morning, afternoon, or evening) based on the
+ * current hour.
+ * @returns The function `getDaySegment` returns a string indicating the time segment of the day based
+ * on the current time. It returns "morning" if the current time is before 12 PM, "afternoon" if the
+ * current time is between 12 PM and 6 PM, and "evening" if the current time is after 6 PM.
+ */
+export function getDaySegment() {
+  const date = new Date();
+  const hours = date.getHours();
+  if (hours < 12) {
+    return "morning";
+  } else if (hours < 18) {
+    return "afternoon";
+  } else {
+    return "evening";
+  }
 }

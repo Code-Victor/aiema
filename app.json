@@ -39,10 +39,10 @@
         "expo-font",
         {
           "fonts": [
-            "node_modules/@expo-google-fonts/urbanist/Urbanist_400Regular",
-            "node_modules/@expo-google-fonts/urbanist/Urbanist_500Medium",
-            "node_modules/@expo-google-fonts/urbanist/Urbanist_600SemiBold",
-            "node_modules/@expo-google-fonts/urbanist/Urbanist_700Bold"
+            "node_modules/@expo-google-fonts/urbanist/Urbanist_400Regular.ttf",
+            "node_modules/@expo-google-fonts/urbanist/Urbanist_500Medium.ttf",
+            "node_modules/@expo-google-fonts/urbanist/Urbanist_600SemiBold.ttf",
+            "node_modules/@expo-google-fonts/urbanist/Urbanist_700Bold.ttf"
           ]
         }
       ],

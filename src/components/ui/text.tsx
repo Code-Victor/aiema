@@ -8,17 +8,23 @@ interface TextProps
 export const Text = React.forwardRef<
   React.ElementRef<typeof RNText>,
   TextProps
->(({ color = "neutral.500", fow = "regular", fos = "p", ...props }, ref) => {
-  styles.useVariants({
-    color,
-    fow,
-    fos,
-    // you can also use strings
-    // color: "true" | "false"
-  });
+>(
+  (
+    { color = "neutral.500", fow = "regular", fos = "p", ta, style, ...props },
+    ref
+  ) => {
+    styles.useVariants({
+      color,
+      fow,
+      fos,
+      ta,
+      // you can also use strings
+      // color: "true" | "false"
+    });
 
-  return <RNText ref={ref} style={styles.text} {...props} />;
-});
+    return <RNText ref={ref} style={[styles.text, style]} {...props} />;
+  }
+);
 
 const styles = StyleSheet.create((theme) => ({
   text: {
@@ -37,18 +43,29 @@ const styles = StyleSheet.create((theme) => ({
           }
         >
       ),
+      ta: {
+        left: {
+          textAlign: "left",
+        },
+        right: {
+          textAlign: "right",
+        },
+        center: {
+          textAlign: "center",
+        },
+      },
       fow: {
         regular: {
           fontFamily: theme.fontWeights.regular,
         },
+        medium: {
+          fontFamily: theme.fontWeights.medium,
+        },
         semibold: {
           fontFamily: theme.fontWeights.semibold,
         },
-        medium: {
-          fontFamily: theme.fontWeights.semibold,
-        },
         bold: {
-          fontFamily: theme.fontWeights.semibold,
+          fontFamily: theme.fontWeights.bold,
         },
       },
       fos: {
@@ -84,3 +101,4 @@ const styles = StyleSheet.create((theme) => ({
     },
   },
 }));
+Text.displayName = "Text";

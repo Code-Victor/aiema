@@ -1,0 +1,1 @@
+ export type IconVariant= 'Linear' | 'Outline' | 'Broken' | 'Bold' | 'Bulk' | 'TwoTone';
