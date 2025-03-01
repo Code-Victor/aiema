@@ -13,7 +13,7 @@ export function capitalize(str: string) {
 }
 
 export function getAvatar(name: string) {
-  const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}`;
+  const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${name}&backgroundType=gradientLinear,solid`;
 
   return avatarUrl;
 }

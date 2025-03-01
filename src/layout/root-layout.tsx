@@ -1,6 +1,6 @@
 import { Stack } from "expo-router/stack";
 import { SystemBars } from "react-native-edge-to-edge";
-// Rest of the import statements
+import { Toaster } from "sonner-native";
 
 import {
   Urbanist_400Regular,
@@ -11,7 +11,7 @@ import {
 } from "@expo-google-fonts/urbanist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
-
+import { QueryClientProvider } from "@/components/queryClient";
 import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync();
@@ -35,11 +35,14 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack>
-        <SystemBars style="dark" />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </GestureHandlerRootView>
+    <QueryClientProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <SystemBars style="dark" />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+        <Toaster richColors />
+      </GestureHandlerRootView>
+    </QueryClientProvider>
   );
 }

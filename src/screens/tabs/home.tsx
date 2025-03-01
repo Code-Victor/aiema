@@ -1,4 +1,4 @@
-import { ScrollView, View } from "react-native";
+import { Linking, ScrollView, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { SystemBars } from "react-native-edge-to-edge";
 import { Image } from "expo-image";
@@ -10,6 +10,7 @@ import {
   AddCircle,
   AddSquare,
   Call,
+  Edit2,
   Hospital,
   Notification,
   Sound,
@@ -19,6 +20,9 @@ import React from "react";
 import { YStack, XStack } from "@/components/ui/stacks";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Link, router } from "expo-router";
+import { authRouter } from "@/api/router";
+import { useStore } from "@/store";
 export default function Home() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -37,7 +41,8 @@ const daySegmentEmoji = {
 };
 
 function Greetings() {
-  const name = "John Doe";
+  const { data: user } = authRouter.getUserDetails.useQuery();
+  const name = user?.full_name ?? "***";
   const daySegment = getDaySegment();
 
   return (
@@ -51,7 +56,14 @@ function Greetings() {
           How are you feeling today?
         </Text>
       </View>
-      <IconButton icon={Notification} label="Notifications" badge={20} />
+      <IconButton
+        icon={Notification}
+        label="Notifications"
+        badge={20}
+        onPress={() => {
+          router.navigate("/(auth)/login");
+        }}
+      />
     </View>
   );
 }
@@ -123,10 +135,13 @@ function Insurance() {
           My Insurance
         </Text>
         <IconButton
-          icon={Add}
+          icon={Edit2}
           variant="ghost"
           iconVariant="Outline"
           label="Add more"
+          onPress={() => {
+            router.navigate("/(app)/insurance");
+          }}
         />
       </XStack>
       <InsuranceCard />
@@ -135,11 +150,13 @@ function Insurance() {
 }
 
 function InsuranceCard() {
+  const { data: user } = authRouter.getUserDetails.useQuery();
+  const name = user?.full_name ?? "***";
   return (
     <XStack gap="1" p="5" ai="start" boc="neutral.100" bow="1" br="3">
       <YStack gap="3.5" f={"1"}>
         <Text>
-          Name: <Text fow="semibold">John Doe</Text>
+          Name: <Text fow="semibold">{name}</Text>
         </Text>
         <Text>
           Insurance ID: <Text fow="semibold">4567000</Text>
@@ -168,6 +185,8 @@ function InsuranceCard() {
   );
 }
 function EmergencyContacts() {
+  const emergencyContacts = useStore((s) => s.emergencyContacts);
+
   return (
     <YStack p="4">
       <XStack jc="between" ai="center" style={{ width: "100%" }}>
@@ -179,27 +198,43 @@ function EmergencyContacts() {
           variant="ghost"
           iconVariant="Outline"
           label="Add more"
+          onPress={() => {
+            router.navigate("/(app)/emergency-contact");
+          }}
         />
       </XStack>
       <YStack gap="4">
-        <EmergencyContactCard />
-        <EmergencyContactCard />
-        <EmergencyContactCard />
+        {emergencyContacts.map((contact) => (
+          <EmergencyContactCard key={contact.id} {...contact} />
+        ))}
       </YStack>
     </YStack>
   );
 }
 
-function EmergencyContactCard() {
+function EmergencyContactCard({
+  name,
+  phoneNumber,
+}: {
+  name: string;
+  phoneNumber: string;
+}) {
   return (
     <XStack gap="4" p="5" ai="center" boc="neutral.100" bow="1" br="3">
-      <Avatar name={"John Doe"} />
+      <Avatar name={name} />
 
       <YStack gap="1" f={"1"}>
-        <Text fow="semibold">John Doe</Text>
-        <Text color="neutral.200">Family Doctor</Text>
+        <Text fow="semibold">{name}</Text>
+        <Text color="neutral.200">{phoneNumber}</Text>
       </YStack>
-      <IconButton icon={Call} variant="grey" label="Add more" />
+      <IconButton
+        icon={Call}
+        variant="grey"
+        label="call"
+        onPress={() => {
+          Linking.openURL(`tel:${phoneNumber}`);
+        }}
+      />
     </XStack>
   );
 }
@@ -209,7 +244,6 @@ const styles = StyleSheet.create((theme, rt) => ({
   container: {
     paddingTop: rt.insets.top,
     backgroundColor: theme.colors["shades.white"],
-    // flex: 1,
   },
   greetingContainer: {
     flexDirection: "row",
