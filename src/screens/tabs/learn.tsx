@@ -10,6 +10,8 @@ import { Grid } from "@/components/ui/grid";
 import { IconButton } from "@/components/ui/icon-button";
 import { convertMinutesToTime } from "@/lib/utils";
 import * as React from "react";
+import { Link } from "expo-router";
+import { guides } from "@/lib/data";
 export default function Home() {
   return (
     <YStack f="1" style={styles.container}>
@@ -79,35 +81,7 @@ function Topics() {
     </YStack>
   );
 }
-const sampleGuides = [
-  {
-    title: "How to stop bleeding",
-    description:
-      "Learning to stop bleeding can save a life and can be done in 5 minutes",
-    duration: 5,
-  },
-  {
-    title: "How to treat burns",
-    description: "Learn how to treat burns in case of an emergency",
-    duration: 10,
-  },
-  {
-    title: "How to treat fractures",
-    description:
-      "Fractures are common injuries, learn how to treat them in 15 minutes",
-    duration: 15,
-  },
-  // {
-  //   title: "How to perform CPR",
-  //   description: "Learn how to perform CPR in 20 minutes",
-  //   duration: 20,
-  // },
-  // {
-  //   title: "How to treat choking",
-  //   description: "Learn how to treat choking in 5 minutes",
-  //   duration: 5,
-  // },
-];
+
 function Guides() {
   return (
     <YStack gap="4">
@@ -124,7 +98,7 @@ function Guides() {
         />
       </XStack>
       <YStack gap="7">
-        {sampleGuides.map((guide, i) => (
+        {guides.map((guide, i) => (
           <GuideCard key={i} {...guide} />
         ))}
       </YStack>
@@ -132,32 +106,45 @@ function Guides() {
   );
 }
 interface GuideCardProps {
+  id: number;
   title: string;
-  description: string;
+  preamble: string;
   duration: number;
 }
 function GuideCard(props: GuideCardProps) {
   return (
-    <Pressable
-      style={{
-        borderRadius: 14,
-        width: "100%",
-        gap: 10,
+    <Link
+      href={{
+        pathname: "/(app)/blog/[id]",
+        params: {
+          id: props.id,
+        },
       }}
+      asChild
     >
-      <XStack jc="between">
-        <Text fow="semibold">{props.title}</Text>
-
-        <XStack bg="background" px="1" py="0.5" br="2">
-          <Text fow="medium" color="neutral.200">
-            {props.duration} mins read
+      <Pressable
+        style={{
+          borderRadius: 14,
+          width: "100%",
+          gap: 10,
+        }}
+      >
+        <XStack jc="between" gap="2">
+          <Text fow="semibold" style={{ flex: 1 }} numberOfLines={1}>
+            {props.title}
           </Text>
+
+          <XStack bg="background" px="1" py="0.5" br="2">
+            <Text fow="medium" color="neutral.200">
+              {props.duration} mins read
+            </Text>
+          </XStack>
         </XStack>
-      </XStack>
-      <Text fow="medium" color="neutral.200">
-        {props.description}
-      </Text>
-    </Pressable>
+        <Text fow="medium" color="neutral.200">
+          {props.preamble}
+        </Text>
+      </Pressable>
+    </Link>
   );
 }
 
@@ -183,7 +170,7 @@ function VideoTutorials() {
           gap: 12,
         }}
       >
-        {sampleGuides.map((guide, i) => (
+        {guides.map((guide, i) => (
           <VideoTutorialCard key={i} {...guide} creator="Rwanda Red Cross" />
         ))}
       </ScrollView>

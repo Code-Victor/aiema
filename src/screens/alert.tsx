@@ -1,39 +1,34 @@
-import {
-  Linking,
-  Pressable,
-  ScrollView,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import { StyleSheet } from "react-native-unistyles";
-import { SystemBars } from "react-native-edge-to-edge";
-import { PageHeader } from "@/components/ui/page-header";
-import { XStack, YStack } from "@/components/ui/stacks";
-import { Input, InputWithIcon } from "@/components/ui/input";
-import {
-  ArrowRight2,
-  Brodcast,
-  Scroll,
-  SearchNormal1,
-} from "iconsax-react-native";
-import { Text } from "@/components/ui/text";
-import { Grid } from "@/components/ui/grid";
-import { IconButton } from "@/components/ui/icon-button";
-import { convertMinutesToTime } from "@/lib/utils";
-import * as React from "react";
-import { Stack } from "expo-router";
 import { SlideToCancel } from "@/components/slide-to-cancel";
 import { Donut } from "@/components/ui/donut";
+import { XStack, YStack } from "@/components/ui/stacks";
+import { Text } from "@/components/ui/text";
+import { useStore } from "@/store";
+import * as Haptics from "expo-haptics";
+import { Stack } from "expo-router";
+import * as SMS from "expo-sms";
+import { Brodcast } from "iconsax-react-native";
+import * as React from "react";
+import { TouchableOpacity, useWindowDimensions } from "react-native";
+import { SystemBars } from "react-native-edge-to-edge";
 import {
-  cancelAnimation,
   runOnJS,
   useAnimatedReaction,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
-export default function Home() {
+import { StyleSheet } from "react-native-unistyles";
+
+const alertPrompt = () => {
+  return `🚨 SOS Emergency Alert 🚨
+
+Urgent! I need immediate help!
+My location: https://maps.app.goo.gl/EXYnTbWmVGFPxBMb6
+Please call emergency services and assist if you can.
+
+Sent via Aiema - AI Emergency Assistant`;
+};
+export default function Alert() {
+  const emergencyContacts = useStore((s) => s.emergencyContacts);
   return (
     <YStack f="1" style={styles.container}>
       <Stack.Screen
@@ -68,8 +63,12 @@ export default function Home() {
       </YStack>
       <YStack f="1" jc="center" ai="center">
         <EmergencyButton
-          onComplete={() => {
-            Linking.openURL("tel:112");
+          onComplete={async () => {
+            const { result } = await SMS.sendSMSAsync(
+              emergencyContacts.map((contact) => contact.phoneNumber),
+              alertPrompt()
+            );
+            // Linking.openURL("tel:112");
           }}
         />
       </YStack>
@@ -152,6 +151,8 @@ export function EmergencyButton({ onComplete }: EmergencyButtonProps) {
           <Text fos="h5" fow="semibold" ta="center" color="shades.white">
             {secondsLeft === 3
               ? `Hold for 3\nseconds to start`
+              : secondsLeft === 0
+              ? "Sending Alert..."
               : `Release in\n${secondsLeft} second${
                   secondsLeft !== 1 ? "s" : ""
                 }`}

@@ -47,7 +47,7 @@ export default function Insurance() {
     },
   });
   function onSumbit(data: FormSchema) {
-    login(data);
+    // login(data);
   }
   return (
     <>
