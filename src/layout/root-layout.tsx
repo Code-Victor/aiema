@@ -13,7 +13,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import { QueryClientProvider } from "@/components/queryClient";
 import { useEffect } from "react";
-
+import { KeyboardProvider } from "react-native-keyboard-controller";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -35,14 +35,16 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <SystemBars style="dark" />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-        <Toaster richColors />
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+    <KeyboardProvider>
+      <QueryClientProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <SystemBars style="dark" />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+          <Toaster richColors />
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </KeyboardProvider>
   );
 }

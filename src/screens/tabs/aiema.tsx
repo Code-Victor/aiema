@@ -6,16 +6,21 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
+  FlatList,
 } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { SystemBars } from "react-native-edge-to-edge";
 import { Ionicons } from "@expo/vector-icons";
-import { authRouter } from "@/api/router";
+import { authRouter, chatRouter } from "@/api/router";
 import { Text } from "@/components/ui/text";
-import { XStack } from "@/components/ui/stacks";
+import { XStack, YStack } from "@/components/ui/stacks";
 import { IconButton } from "@/components/ui/icon-button";
-import { ArrowLeft2, Setting, Setting2 } from "iconsax-react-native";
-import { router } from "expo-router";
+import { Add, ArrowLeft2, Setting, Setting2 } from "iconsax-react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { Chat } from "@/api/types";
+import { Input, InputWithIcon } from "@/components/ui/input";
+import { set } from "zod";
 // Screen type definition
 type ScreenType = "landing" | "text" | "voice";
 
@@ -23,85 +28,96 @@ export default function Aiema() {
   // State to track current screen
   const [currentScreen, setCurrentScreen] = useState<ScreenType>("landing");
 
-  // Function to render appropriate screen content
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case "landing":
-        return <LandingScreen onInputStart={() => setCurrentScreen("text")} />;
-      case "text":
-        return <TextInputScreen onBack={() => setCurrentScreen("landing")} />;
-      case "voice":
-        return <VoiceInputScreen onBack={() => setCurrentScreen("landing")} />;
-      default:
-        return <LandingScreen onInputStart={() => setCurrentScreen("text")} />;
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <SystemBars style="dark" />
-      {renderScreen()}
+      <TextInputScreen onBack={() => setCurrentScreen("landing")} />
     </SafeAreaView>
   );
 }
 
-// Landing Screen Component
-const LandingScreen = ({ onInputStart }: { onInputStart: () => void }) => {
-  const { data: user } = authRouter.getUserDetails.useQuery();
-  const name = user?.full_name ?? "***";
-  return (
-    <View style={styles.container}>
-      <XStack ai="center" jc="between" py="6">
-        <XStack ai="center">
-          <IconButton
-            variant="ghost"
-            icon={ArrowLeft2}
-            iconVariant="Outline"
-            label="go back"
-            onPress={router.back}
-          />
-          <Text fos="h4" fow="semibold">
-            Ask Aiema
-          </Text>
-        </XStack>
-        <IconButton icon={Setting} label="settings" />
-      </XStack>
-
-      <View style={styles.welcomeContainer}>
-        <Text
-          fos="h2"
-          fow="semibold"
-          style={{
-            color: "#A97EFE",
-          }}
-        >{`Hi, ${name}`}</Text>
-        <Text fos="h3" fow="regular">
-          How can I help you today?
-        </Text>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <TouchableOpacity style={styles.inputButton} onPress={onInputStart}>
-          <Ionicons name="add" size={20} color="#666" />
-          <Text style={styles.inputButtonText}>
-            Need help? Type or say it here...
-          </Text>
-          <View style={styles.voiceButton}>
-            <Ionicons name="mic" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
 // Text Input Screen Component
 const TextInputScreen = ({ onBack }: { onBack: () => void }) => {
   const [message, setMessage] = useState("");
+  const queryClient = useQueryClient();
+  const { data: user } = authRouter.getUserDetails.useQuery();
+  const name = user?.full_name ?? "***";
+  const { id = "" } = useLocalSearchParams<{ id?: string }>();
+  const { data: chatHistory = [] } = chatRouter.getChatMessages.useQuery({
+    variables: {
+      id,
+    },
+  });
+  const flatlistRef = React.useRef<FlatList>(null);
+  React.useEffect(() => {});
+  const { mutate: sendMessage, isPending: isConductingContinousChat } =
+    chatRouter.sendMessage.useMutation({
+      onMutate: async ({ message }) => {
+        setMessage("");
+        await queryClient.cancelQueries(
+          chatRouter.getChatMessages.getFetchOptions({ id })
+        );
 
+        const previousThreadMessages = queryClient.getQueryData(
+          chatRouter.getChatMessages.getKey({ id })
+        );
+        queryClient.setQueryData(
+          chatRouter.getChatMessages.getKey({ id }),
+          (old) => {
+            if (!old) return old;
+            const newMessage = {
+              role: "user",
+              content: message,
+            } satisfies Chat;
+            return [
+              ...old,
+              newMessage,
+              {
+                role: "assistant",
+                content: "AIEma is thinking🧠...",
+              } satisfies Chat,
+            ];
+          }
+        );
+
+        return { previousThreadMessages };
+      },
+      onError: (_err, _newMessage, context) => {
+        queryClient.setQueryData(
+          chatRouter.getChatMessages.getKey(),
+          context?.previousThreadMessages
+        );
+      },
+      // Always refetch after error or success:
+      onSuccess: (data) => {
+        if (!id) {
+          router.setParams({ id: data.sessionId });
+        }
+        // console.log("data");
+        // queryClient.setQueryData(
+        //   chatRouter.getChatMessages.getKey({ id }),
+        //   (old) => {
+        //     if (!old) return old;
+        //     return [
+        //       ...old,
+        //       {
+        //         role: "assistant",
+        //         content: data.response,
+        //       } as Chat,
+        //     ];
+        //   }
+        // );
+        return queryClient.invalidateQueries(
+          chatRouter.getChatMessages.getFetchOptions({
+            id,
+          })
+        );
+      },
+    });
+  console.log("isPending", isConductingContinousChat);
   return (
     <View style={styles.container}>
-      <XStack ai="center" jc="between" py="6">
+      <XStack ai="center" jc="between">
         <XStack ai="center">
           <IconButton
             variant="ghost"
@@ -117,93 +133,79 @@ const TextInputScreen = ({ onBack }: { onBack: () => void }) => {
         <IconButton icon={Setting} label="settings" />
       </XStack>
 
-      <ScrollView style={styles.chatContainer}>
-        <View style={styles.userMessageContainer}>
-          <View style={styles.userMessage}>
-            <Text style={styles.messageText}>
-              Hi Aiema, what can I do to a burn? It's an emergency
+      <FlatList
+        ref={flatlistRef}
+        contentContainerStyle={{
+          flexGrow: 1,
+          gap: 8,
+          paddingTop: 12,
+        }}
+        ListEmptyComponent={() => (
+          <YStack ai="center" jc="center" f="1">
+            <Text
+              fos="h2"
+              fow="semibold"
+              style={{
+                color: "#A97EFE",
+              }}
+            >{`Hi, ${name}`}</Text>
+            <Text fos="h3" fow="regular">
+              How can I help you today?
             </Text>
-          </View>
-        </View>
+          </YStack>
+        )}
+        data={chatHistory}
+        renderItem={({ item }) => {
+          if (item.role === "user") {
+            return (
+              <View style={styles.userMessageContainer}>
+                <View style={styles.userMessage}>
+                  <Text style={styles.messageText}>{item.content}</Text>
+                </View>
+              </View>
+            );
+          } else {
+            return (
+              <View style={styles.aiResponseContainer}>
+                <Text style={styles.responseText}>{item.content}</Text>
 
-        <View style={styles.aiResponseContainer}>
-          <Text style={styles.responseText}>
-            Run under cool (not ice-cold) water for 10-20 min.
-          </Text>
-          <Text style={styles.responseText}>
-            Cover with a clean, non-stick bandage.
-          </Text>
-          <Text style={styles.responseText}>
-            Take ibuprofen or acetaminophen if needed.
-          </Text>
-          <Text style={styles.responseText}>
-            Avoid ice, butter, or popping blisters.
-          </Text>
-          <Text style={styles.responseText}>
-            If severe, large, or infected, see a doctor.
-          </Text>
-          <Text style={styles.responseText}>Stay safe! 🩹</Text>
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity style={styles.actionButton}>
+                    <Ionicons name="copy-outline" size={20} color="#666" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.actionButton}>
+                    <Ionicons name="share-outline" size={20} color="#666" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.actionButton}>
+                    <Ionicons name="thumbs-up-outline" size={20} color="#666" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          }
+        }}
+      />
 
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="copy-outline" size={20} color="#666" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="share-outline" size={20} color="#666" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="thumbs-up-outline" size={20} color="#666" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-
-      <View style={styles.inputContainer}>
-        <TouchableOpacity style={styles.inputButton}>
-          <Ionicons name="add" size={20} color="#666" />
-          <Text style={styles.inputButtonText}>Thank you Aiema :)</Text>
-          <View style={styles.sendButton}>
-            <Ionicons name="paper-plane" size={20} color="white" />
-          </View>
+      <XStack style={styles.inputContainer} ai="center">
+        <Input
+          value={message}
+          onChangeText={setMessage}
+          style={{
+            flex: 1,
+            marginRight: 8,
+          }}
+          placeholder="Type your message here..."
+        />
+        <TouchableOpacity
+          onPress={() => {
+            console.log("sending message", message);
+            sendMessage({ message, id: id ? id : undefined });
+          }}
+          style={styles.sendButton}
+        >
+          <Ionicons name="paper-plane" size={20} color="white" />
         </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
-// Voice Input Screen Component
-const VoiceInputScreen = ({ onBack }: { onBack: () => void }) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={24} color="black" />
-          <Text style={styles.screenTitle}>Ask Aiema</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.settingsButton}>
-          <Ionicons name="ellipsis-horizontal" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.voiceContainer}>
-        <View style={styles.waveformContainer}>
-          <Image
-            source={{ uri: "https://example.com/placeholder/waveform.png" }}
-            style={styles.waveform}
-            resizeMode="contain"
-          />
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <TouchableOpacity style={styles.inputButton}>
-          <Ionicons name="add" size={20} color="#666" />
-          <Text style={styles.inputButtonText}>Listening...</Text>
-          <View style={styles.recordingButton}>
-            <Ionicons name="stop" size={20} color="white" />
-          </View>
-        </TouchableOpacity>
-      </View>
+      </XStack>
     </View>
   );
 };
@@ -216,7 +218,8 @@ const styles = StyleSheet.create((theme, rt) => ({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: rt.insets.top,
   },
   header: {
     flexDirection: "row",
@@ -236,33 +239,17 @@ const styles = StyleSheet.create((theme, rt) => ({
   settingsButton: {
     padding: 8,
   },
-  welcomeContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#5B6BF9",
-    marginBottom: 8,
-  },
   helpText: {
     fontSize: 16,
     color: "#666",
   },
   inputContainer: {
-    marginTop: "auto",
-    marginBottom: 12,
+    paddingTop: 8,
+    // width: "100%",
+    // backgroundColor: "#F0F2FE",
   },
   inputButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 24,
-    padding: 12,
-    paddingHorizontal: 16,
+    flex: 1,
   },
   inputButtonText: {
     flex: 1,
@@ -280,8 +267,8 @@ const styles = StyleSheet.create((theme, rt) => ({
   sendButton: {
     backgroundColor: "#5B6BF9",
     borderRadius: 50,
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -293,13 +280,8 @@ const styles = StyleSheet.create((theme, rt) => ({
     justifyContent: "center",
     alignItems: "center",
   },
-  chatContainer: {
-    flex: 1,
-    marginVertical: 8,
-  },
   userMessageContainer: {
     alignItems: "flex-end",
-    marginBottom: 16,
   },
   userMessage: {
     backgroundColor: "#F0F2FE",
@@ -311,7 +293,7 @@ const styles = StyleSheet.create((theme, rt) => ({
     fontSize: 16,
   },
   aiResponseContainer: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: theme.colors["neutral.100"],
     borderRadius: 16,
     padding: 12,
     maxWidth: "80%",

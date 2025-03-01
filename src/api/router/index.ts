@@ -13,3 +13,12 @@ export const authRouter= router("auth",{
         fetcher: api.getUserDetials,
     }),
 })
+
+export const chatRouter = router("chat",{
+  sendMessage: router.mutation({
+    mutationFn: api.sendtMessage,
+  }),
+  getChatMessages: router.query({
+    fetcher: api.getChatMessages,
+  }),
+})

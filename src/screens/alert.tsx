@@ -1,4 +1,5 @@
 import {
+  Linking,
   Pressable,
   ScrollView,
   TouchableOpacity,
@@ -68,7 +69,7 @@ export default function Home() {
       <YStack f="1" jc="center" ai="center">
         <EmergencyButton
           onComplete={() => {
-            console.log("Emergency button pressed");
+            Linking.openURL("tel:112");
           }}
         />
       </YStack>
@@ -91,7 +92,6 @@ export function EmergencyButton({ onComplete }: EmergencyButtonProps) {
   const updateSeconds = React.useCallback(
     (progress: number) => {
       const newSecondsLeft = Math.ceil((progress / 100) * 3);
-      console.log("progress", progress, newSecondsLeft);
       if (newSecondsLeft !== secondsLeft) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setSecondsLeft(newSecondsLeft);

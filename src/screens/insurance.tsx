@@ -99,7 +99,7 @@ export default function Insurance() {
             }}
           >
             <GradientButton
-              title="Login"
+              title="Update info"
               loading={isPending}
               onPress={form.handleSubmit(onSumbit)}
             />

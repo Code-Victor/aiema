@@ -49,3 +49,17 @@ export interface User {
     role:                 string;
     resetPasswordExpires: null;
 }
+
+
+export interface SendMessageResponse {
+    sessionId: string;
+    response:  string;
+}
+
+
+export type GetChatHistoryResponse= Chat[]
+
+export interface Chat {
+    role:    "user"|"assistant";
+    content: string;
+}
