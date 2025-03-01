@@ -9,7 +9,7 @@ import {
   Urbanist_700Bold,
   useFonts,
 } from "@expo-google-fonts/urbanist";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 
 import { useEffect } from "react";
@@ -35,9 +35,11 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <SystemBars style="dark" />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack>
+        <SystemBars style="dark" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </GestureHandlerRootView>
   );
 }

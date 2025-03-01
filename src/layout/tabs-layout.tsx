@@ -16,6 +16,7 @@ import { TouchableOpacity } from "react-native";
 import { Text } from "@/components/ui/text";
 import { StyleSheet } from "react-native-unistyles";
 import { XStack, YStack } from "@/components/ui/stacks";
+import { Link } from "expo-router";
 export default function TabLayout() {
   return (
     <>
@@ -36,9 +37,14 @@ export default function TabLayout() {
               ai="center"
               style={styles.alertButtonContainer}
             >
-              <TouchableOpacity style={styles.alertButton} activeOpacity={0.8}>
-                <Brodcast variant="Bold" size={24} color="#fff" />
-              </TouchableOpacity>
+              <Link href="/alert" asChild>
+                <TouchableOpacity
+                  style={styles.alertButton}
+                  activeOpacity={0.8}
+                >
+                  <Brodcast variant="Bold" size={24} color="#fff" />
+                </TouchableOpacity>
+              </Link>
               <Text>Alert</Text>
             </YStack>
             <TabTrigger name="Health" href="/(tabs)/health" asChild>
