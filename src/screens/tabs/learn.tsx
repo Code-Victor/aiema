@@ -12,6 +12,23 @@ import { convertMinutesToTime } from "@/lib/utils";
 import * as React from "react";
 import { Link } from "expo-router";
 import { guides } from "@/lib/data";
+import { WebView } from "react-native-webview";
+
+const firstAidVideos = [
+  {
+    title: "CPR Basics",
+    creator: "Victor Chang Cardiac Research Institute",
+    duration: 10,
+    url: "https://www.youtube.com/watch?v=Plse2FOkV4Q&t=94s",
+  },
+  {
+    title: "How to Stop Bleeding",
+    creator: "UPMC",
+    duration: 5,
+    url: "https://www.youtube.com/watch?v=8sEijZkfUHI",
+  },
+];
+
 export default function Home() {
   return (
     <YStack f="1" style={styles.container}>
@@ -30,49 +47,26 @@ export default function Home() {
     </YStack>
   );
 }
+
 const topics = [
-  {
-    title: "🩸 Bleeding",
-    color: "#FFC4C1",
-  },
-  {
-    title: "🔥 Burns",
-    color: "#FFD3B3B2",
-  },
-  {
-    title: "🦴 Fractures",
-    color: "#E9E9E9",
-  },
-  {
-    title: "❤️ CPR Basics",
-    color: "#E4F8E8",
-  },
-  {
-    title: "😳 Choking",
-    color: "#F2F7FF",
-  },
+  { title: "🩸 Bleeding", color: "#FFC4C1" },
+  { title: "🔥 Burns", color: "#FFD3B3B2" },
+  { title: "🦴 Fractures", color: "#E9E9E9" },
+  { title: "❤️ CPR Basics", color: "#E4F8E8" },
+  { title: "😳 Choking", color: "#F2F7FF" },
 ];
+
 function Topics() {
   return (
     <YStack gap="4">
       <Text fow="bold" fos="h5">
         Popular Topics
       </Text>
-      <XStack
-        style={{
-          flexWrap: "wrap",
-          rowGap: 10,
-          columnGap: 10,
-        }}
-      >
+      <XStack style={{ flexWrap: "wrap", rowGap: 10, columnGap: 10 }}>
         {topics.map(({ title, color }) => (
           <Pressable
             key={title}
-            style={{
-              padding: 15,
-              backgroundColor: color,
-              borderRadius: 14,
-            }}
+            style={{ padding: 15, backgroundColor: color, borderRadius: 14 }}
           >
             <Text fow="bold">{title}</Text>
           </Pressable>
@@ -105,12 +99,14 @@ function Guides() {
     </YStack>
   );
 }
+
 interface GuideCardProps {
   id: number;
   title: string;
   preamble: string;
   duration: number;
 }
+
 function GuideCard(props: GuideCardProps) {
   return (
     <Link
@@ -166,58 +162,47 @@ function VideoTutorials() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          gap: 12,
-        }}
+        contentContainerStyle={{ gap: 12 }}
       >
-        {guides.map((guide, i) => (
-          <VideoTutorialCard key={i} {...guide} creator="Rwanda Red Cross" />
+        {firstAidVideos.map((video, i) => (
+          <VideoTutorialCard key={i} {...video} />
         ))}
       </ScrollView>
     </YStack>
   );
 }
+
 function VideoTutorialCard({
-  duration,
   title,
   creator,
+  duration,
+  url,
 }: {
   title: string;
   creator: string;
   duration: number;
+  url: string;
 }) {
   const { width } = useWindowDimensions();
 
-  const time = React.useMemo(() => {
-    return convertMinutesToTime(duration);
-  }, [duration]);
   return (
-    <Pressable
-      style={{
-        borderRadius: 14,
-        width: width * 0.7,
-        gap: 10,
-      }}
-    >
+    <Pressable style={{ borderRadius: 14, width: width * 0.7, gap: 10 }}>
       <YStack gap="2">
-        <XStack
-          bg="neutral.200"
-          br="3"
-          style={{
-            width: "100%",
-            aspectRatio: 2.3,
-          }}
+        <WebView
+          style={{ height: 150, borderRadius: 10 }}
+          source={{ uri: url }}
         />
         <YStack gap="1">
           <Text fow="semibold">{title}</Text>
           <Text fow="medium" color="neutral.200">
-            {time} - {creator}
+            {duration} min - {creator}
           </Text>
         </YStack>
       </YStack>
     </Pressable>
   );
 }
+
 const styles = StyleSheet.create((theme, rt) => ({
   container: {
     paddingTop: rt.insets.top,
