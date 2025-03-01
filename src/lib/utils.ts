@@ -91,3 +91,26 @@ export function getDaySegment() {
     return "evening";
   }
 }
+
+/**
+ * The function `convertMinutesToTime` converts a given number of minutes into a formatted time string
+ * in hours, minutes, and seconds.
+ * @param {number} minutes - The function `convertMinutesToTime` takes the total number of minutes as
+ * input and converts it into a time format (HH:MM:SS). If the input minutes are greater than 60, it
+ * calculates the hours, minutes, and seconds. If the input minutes are less than 60,
+ * @returns The function `convertMinutesToTime` takes a number of minutes as input and converts it into
+ * a time format string. If the input minutes correspond to hours and minutes, it returns the time in
+ * the format "hh:mm:ss" where seconds are assumed to be 0. If the input minutes only correspond to
+ * minutes, it returns the time in the format "mm:ss".
+ */
+export function convertMinutesToTime(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const secs = 0; // Assuming no seconds component in input, you could modify as needed
+
+  if (hours > 0) {
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  } else {
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  }
+}

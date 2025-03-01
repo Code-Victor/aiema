@@ -12,10 +12,27 @@ export const XStack = React.forwardRef<
   StackProps
 >(
   (
-    { boc, bow, br, f, fd = "row", jc, ai, bg, gap, p, px, py, style, ...prop },
+    {
+      pos,
+      boc,
+      bow,
+      br,
+      f,
+      fd = "row",
+      jc,
+      ai,
+      bg,
+      gap,
+      p,
+      px,
+      py,
+      style,
+      ...prop
+    },
     ref
   ) => {
     styles.useVariants({
+      pos,
       boc,
       bow,
       br,
@@ -39,6 +56,7 @@ export const YStack = React.forwardRef<
 >(
   (
     {
+      pos,
       boc,
       bow,
       br,
@@ -57,6 +75,7 @@ export const YStack = React.forwardRef<
     ref
   ) => {
     styles.useVariants({
+      pos,
       boc,
       bow,
       br,
@@ -96,6 +115,14 @@ const spaceValues = {
 const styles = StyleSheet.create((theme) => ({
   stack: {
     variants: {
+      pos: {
+        absolute: {
+          position: "absolute",
+        },
+        relative: {
+          position: "relative",
+        },
+      },
       bow: {
         "1": {
           borderWidth: 1,

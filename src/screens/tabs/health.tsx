@@ -12,7 +12,6 @@ import Animated, {
   FadeIn,
   FadeOut,
   LinearTransition,
-  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -112,7 +111,12 @@ function MedicalData() {
       <AccordionItem title="🏥 Medical Information" defaultExpanded>
         <YStack gap="3">
           {Object.entries(medicalInfo).map(([key, value]) => (
-            <XStack jc="between" ai="center" style={{ width: "100%" }}>
+            <XStack
+              key={key}
+              jc="between"
+              ai="center"
+              style={{ width: "100%" }}
+            >
               <Text color="neutral.200">{key}</Text>
               <Text fow="semibold">{value}</Text>
             </XStack>
@@ -132,7 +136,12 @@ function MedicalData() {
       <AccordionItem title="💊 Medications" defaultExpanded>
         <YStack gap="3.5">
           {medications.map((med) => (
-            <XStack jc="between" ai="center" style={{ width: "100%" }}>
+            <XStack
+              key={med.name}
+              jc="between"
+              ai="center"
+              style={{ width: "100%" }}
+            >
               <YStack gap="1">
                 <Text fow="semibold">{med.name}</Text>
                 <Text
@@ -160,7 +169,12 @@ function MedicalData() {
       <AccordionItem title="📄 Documents">
         <YStack gap="3">
           {documents.map((doc) => (
-            <XStack jc="between" ai="center" style={{ width: "100%" }}>
+            <XStack
+              key={doc.name}
+              jc="between"
+              ai="center"
+              style={{ width: "100%" }}
+            >
               <YStack gap="1">
                 <Text fow="semibold">{doc.name}</Text>
                 <Text
