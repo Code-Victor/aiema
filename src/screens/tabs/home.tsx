@@ -59,7 +59,7 @@ function Greetings() {
       <IconButton
         icon={Notification}
         label="Notifications"
-        badge={20}
+        // badge={20}
         onPress={() => {
           router.navigate("/(auth)/login");
         }}

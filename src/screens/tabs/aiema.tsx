@@ -1,9 +1,21 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView } from "react-native";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import { SystemBars } from "react-native-edge-to-edge";
 import { Ionicons } from "@expo/vector-icons";
-
+import { authRouter } from "@/api/router";
+import { Text } from "@/components/ui/text";
+import { XStack } from "@/components/ui/stacks";
+import { IconButton } from "@/components/ui/icon-button";
+import { ArrowLeft2, Setting, Setting2 } from "iconsax-react-native";
+import { router } from "expo-router";
 // Screen type definition
 type ScreenType = "landing" | "text" | "voice";
 
@@ -26,39 +38,60 @@ export default function Aiema() {
   };
 
   return (
-      <SafeAreaView style={styles.safeArea}>
-        <SystemBars style="dark" />
-        {renderScreen()}
-      </SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
+      <SystemBars style="dark" />
+      {renderScreen()}
+    </SafeAreaView>
   );
 }
 
 // Landing Screen Component
 const LandingScreen = ({ onInputStart }: { onInputStart: () => void }) => {
+  const { data: user } = authRouter.getUserDetails.useQuery();
+  const name = user?.full_name ?? "***";
   return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.screenTitle}>Ask Aiema</Text>
-          <TouchableOpacity style={styles.settingsButton}>
-            <Ionicons name="ellipsis-horizontal" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <XStack ai="center" jc="between" py="6">
+        <XStack ai="center">
+          <IconButton
+            variant="ghost"
+            icon={ArrowLeft2}
+            iconVariant="Outline"
+            label="go back"
+            onPress={router.back}
+          />
+          <Text fos="h4" fow="semibold">
+            Ask Aiema
+          </Text>
+        </XStack>
+        <IconButton icon={Setting} label="settings" />
+      </XStack>
 
-        <View style={styles.welcomeContainer}>
-          <Text style={styles.welcomeText}>Hi, Rebecca</Text>
-          <Text style={styles.helpText}>How can I help you today?</Text>
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.inputButton} onPress={onInputStart}>
-            <Ionicons name="add" size={20} color="#666" />
-            <Text style={styles.inputButtonText}>Need help? Type or say it here...</Text>
-            <View style={styles.voiceButton}>
-              <Ionicons name="mic" size={20} color="white" />
-            </View>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.welcomeContainer}>
+        <Text
+          fos="h2"
+          fow="semibold"
+          style={{
+            color: "#A97EFE",
+          }}
+        >{`Hi, ${name}`}</Text>
+        <Text fos="h3" fow="regular">
+          How can I help you today?
+        </Text>
       </View>
+
+      <View style={styles.inputContainer}>
+        <TouchableOpacity style={styles.inputButton} onPress={onInputStart}>
+          <Ionicons name="add" size={20} color="#666" />
+          <Text style={styles.inputButtonText}>
+            Need help? Type or say it here...
+          </Text>
+          <View style={styles.voiceButton}>
+            <Ionicons name="mic" size={20} color="white" />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
@@ -67,93 +100,111 @@ const TextInputScreen = ({ onBack }: { onBack: () => void }) => {
   const [message, setMessage] = useState("");
 
   return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={24} color="black" />
-            <Text style={styles.screenTitle}>Ask Aiema</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingsButton}>
-            <Ionicons name="ellipsis-horizontal" size={24} color="black" />
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <XStack ai="center" jc="between" py="6">
+        <XStack ai="center">
+          <IconButton
+            variant="ghost"
+            icon={ArrowLeft2}
+            iconVariant="Outline"
+            label="go back"
+            onPress={router.back}
+          />
+          <Text fos="h4" fow="semibold">
+            Ask Aiema
+          </Text>
+        </XStack>
+        <IconButton icon={Setting} label="settings" />
+      </XStack>
+
+      <ScrollView style={styles.chatContainer}>
+        <View style={styles.userMessageContainer}>
+          <View style={styles.userMessage}>
+            <Text style={styles.messageText}>
+              Hi Aiema, what can I do to a burn? It's an emergency
+            </Text>
+          </View>
         </View>
 
-        <ScrollView style={styles.chatContainer}>
-          <View style={styles.userMessageContainer}>
-            <View style={styles.userMessage}>
-              <Text style={styles.messageText}>Hi Aiema, what can I do to a burn? It's an emergency</Text>
-            </View>
+        <View style={styles.aiResponseContainer}>
+          <Text style={styles.responseText}>
+            Run under cool (not ice-cold) water for 10-20 min.
+          </Text>
+          <Text style={styles.responseText}>
+            Cover with a clean, non-stick bandage.
+          </Text>
+          <Text style={styles.responseText}>
+            Take ibuprofen or acetaminophen if needed.
+          </Text>
+          <Text style={styles.responseText}>
+            Avoid ice, butter, or popping blisters.
+          </Text>
+          <Text style={styles.responseText}>
+            If severe, large, or infected, see a doctor.
+          </Text>
+          <Text style={styles.responseText}>Stay safe! 🩹</Text>
+
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="copy-outline" size={20} color="#666" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="share-outline" size={20} color="#666" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionButton}>
+              <Ionicons name="thumbs-up-outline" size={20} color="#666" />
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.aiResponseContainer}>
-            <Text style={styles.responseText}>Run under cool (not ice-cold) water for 10-20 min.</Text>
-            <Text style={styles.responseText}>Cover with a clean, non-stick bandage.</Text>
-            <Text style={styles.responseText}>Take ibuprofen or acetaminophen if needed.</Text>
-            <Text style={styles.responseText}>Avoid ice, butter, or popping blisters.</Text>
-            <Text style={styles.responseText}>If severe, large, or infected, see a doctor.</Text>
-            <Text style={styles.responseText}>Stay safe! 🩹</Text>
-
-            <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.actionButton}>
-                <Ionicons name="copy-outline" size={20} color="#666" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
-                <Ionicons name="share-outline" size={20} color="#666" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
-                <Ionicons name="thumbs-up-outline" size={20} color="#666" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-
-        <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.inputButton}>
-            <Ionicons name="add" size={20} color="#666" />
-            <Text style={styles.inputButtonText}>Thank you Aiema :)</Text>
-            <View style={styles.sendButton}>
-              <Ionicons name="paper-plane" size={20} color="white" />
-            </View>
-          </TouchableOpacity>
         </View>
+      </ScrollView>
+
+      <View style={styles.inputContainer}>
+        <TouchableOpacity style={styles.inputButton}>
+          <Ionicons name="add" size={20} color="#666" />
+          <Text style={styles.inputButtonText}>Thank you Aiema :)</Text>
+          <View style={styles.sendButton}>
+            <Ionicons name="paper-plane" size={20} color="white" />
+          </View>
+        </TouchableOpacity>
       </View>
+    </View>
   );
 };
 
 // Voice Input Screen Component
 const VoiceInputScreen = ({ onBack }: { onBack: () => void }) => {
   return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={24} color="black" />
-            <Text style={styles.screenTitle}>Ask Aiema</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingsButton}>
-            <Ionicons name="ellipsis-horizontal" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={24} color="black" />
+          <Text style={styles.screenTitle}>Ask Aiema</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.settingsButton}>
+          <Ionicons name="ellipsis-horizontal" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.voiceContainer}>
-          <View style={styles.waveformContainer}>
-            <Image
-                source={{ uri: 'https://example.com/placeholder/waveform.png' }}
-                style={styles.waveform}
-                resizeMode="contain"
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.inputButton}>
-            <Ionicons name="add" size={20} color="#666" />
-            <Text style={styles.inputButtonText}>Listening...</Text>
-            <View style={styles.recordingButton}>
-              <Ionicons name="stop" size={20} color="white" />
-            </View>
-          </TouchableOpacity>
+      <View style={styles.voiceContainer}>
+        <View style={styles.waveformContainer}>
+          <Image
+            source={{ uri: "https://example.com/placeholder/waveform.png" }}
+            style={styles.waveform}
+            resizeMode="contain"
+          />
         </View>
       </View>
+
+      <View style={styles.inputContainer}>
+        <TouchableOpacity style={styles.inputButton}>
+          <Ionicons name="add" size={20} color="#666" />
+          <Text style={styles.inputButtonText}>Listening...</Text>
+          <View style={styles.recordingButton}>
+            <Ionicons name="stop" size={20} color="white" />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
