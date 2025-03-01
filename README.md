@@ -33,9 +33,9 @@ Balancing Simplicity & Functionality: Making AIEMA simple yet powerful required 
 ### 🌍 The Future of AIEMA
 
 AIEMA is just getting started. We aim to:
-✅ Expand language support for multilingual accessibility
-✅ Improve AI context awareness for better emergency handling
-✅ Deploy AIEMA in schools, workplaces, and public spaces to ensure life-saving tech is always within reach
+- ✅ Expand language support for multilingual accessibility
+- ✅ Improve AI context awareness for better emergency handling
+- ✅ Deploy AIEMA in schools, workplaces, and public spaces to ensure life-saving tech is always within reach
 
 With AIEMA, we’re not just building an app—we’re redefining emergency response for a safer, more prepared world.
 
