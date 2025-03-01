@@ -1,6 +1,6 @@
 # AIEMA Mobile App
 
-The Official Repository of the Exam Crush Mobile App.
+The Official Repository of the AIEMA Mobile App.
 
 > Built with [Expo](https://expo.dev/)
 
